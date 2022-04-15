@@ -10,7 +10,6 @@ export default function MyNavbar() {
     container: { justifyContent: "center" },
     navbar: {
       borderRadius: "20px",
-      /*fontSize: "12px",*/
     },
     button: {
       margin: "2px",
@@ -19,18 +18,34 @@ export default function MyNavbar() {
 
   const handleClick = (type) => {
     switch (type) {
-      case "link":
-        console.log("link clicked");
-        let counter = myValues.counter;
-        setMyValues((oldValues) => ({ ...oldValues, counter: counter + 1 }));
+      case "accountInfo":
+        setMyValues((oldValues) => ({
+          ...oldValues,
+          currentPage: "accountInfo",
+        }));
         break;
+      case "pageList":
+        setMyValues((oldValues) => ({ ...oldValues, currentPage: "pageList" }));
+        break;
+      case "createAccount":
+        setMyValues((oldValues) => ({
+          ...oldValues,
+          currentPage: "createAccount",
+        }));
+        break;
+
       case "login":
-        console.log("link clicked");
-        setMyValues((oldValues) => ({ ...oldValues, loggedIn: true }));
+        setMyValues((oldValues) => ({
+          ...oldValues,
+          currentPage: "login",
+        }));
         break;
       case "logout":
-        console.log("link clicked");
-        setMyValues((oldValues) => ({ ...oldValues, loggedIn: false }));
+        setMyValues((oldValues) => ({
+          ...oldValues,
+          loggedIn: false,
+          currentPage: "logout",
+        }));
         break;
       default:
         break;
@@ -44,25 +59,37 @@ export default function MyNavbar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {myValues.loggedIn ? (
-              ""
+              <>
+                <Nav.Link
+                  href="#accountInfo"
+                  onClick={() => handleClick("accountInfo")}
+                >
+                  Account Info
+                </Nav.Link>
+                <Nav.Link
+                  href="#pageList"
+                  onClick={() => handleClick("pageList")}
+                >
+                  Page List
+                </Nav.Link>
+
+                <Nav.Link href="#logout" onClick={() => handleClick("logout")}>
+                  Logout
+                </Nav.Link>
+              </>
             ) : (
-              <Nav.Link href="#login" onClick={() => handleClick("login")}>
-                Login {myValues.counter}
-              </Nav.Link>
+              <>
+                <Nav.Link
+                  href="#createAccount"
+                  onClick={() => handleClick("createAccount")}
+                >
+                  create Account
+                </Nav.Link>
+                <Nav.Link href="#login" onClick={() => handleClick("login")}>
+                  Login
+                </Nav.Link>
+              </>
             )}
-            <Nav.Link href="#accountInfo" onClick={() => handleClick("link")}>
-              Account Info
-            </Nav.Link>
-            {myValues.loggedIn ? (
-              <Nav.Link href="#logout" onClick={() => handleClick("logout")}>
-                Logout
-              </Nav.Link>
-            ) : (
-              ""
-            )}
-            <Nav.Link href="#createAccount" onClick={() => handleClick("link")}>
-              Create Account
-            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
