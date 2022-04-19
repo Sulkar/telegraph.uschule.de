@@ -5,9 +5,14 @@ const MyContext = React.createContext({});
 function MyContextProvider(props) {
   const [myValues, setMyValues] = useState({
     username: "",
+    qrCodeScanner: null,
     loggedIn: false,
     currentPage: "login",
-    currentAccessToken: "",   
+    currentAccessToken: "",  
+    currentAuthorName: "",
+    currentShortName: "",
+    currentAuthorUrl: "",
+    currentPageCount: "",
   });
 
   return (

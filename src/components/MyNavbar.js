@@ -44,8 +44,10 @@ export default function MyNavbar() {
         setMyValues((oldValues) => ({
           ...oldValues,
           loggedIn: false,
+          currentAccessToken: "",
           currentPage: "logout",
         }));
+        localStorage.setItem("access_token", "");        
         break;
       default:
         break;
