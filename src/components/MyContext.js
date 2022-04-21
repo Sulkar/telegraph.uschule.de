@@ -13,6 +13,7 @@ function MyContextProvider(props) {
     currentShortName: "",
     currentAuthorUrl: "",
     currentPageCount: "",
+    showAccessTokenModal: false,
   });
 
   return (

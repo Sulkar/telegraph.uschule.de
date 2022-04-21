@@ -22,7 +22,7 @@ export default function Login() {
     },
   };
 
-  //let access_token =  "b968da509bb76866c35425099bc0989a5ec3b32997d55286c657e6994bbb";
+  //let access_token =  "6adcc093222552a1402b02d0b2434131ca403b9cc08f33a7bd97dfe64a4c";
 
   async function handleLogin() {
     myValues.qrCodeScanner.stop();
@@ -66,7 +66,8 @@ export default function Login() {
 
   return (
     <>
-      <h2>Login </h2>
+     
+     <div style={{marginTop: "20px"}}></div>
       <QrScannerVideo />
 
       {loading ? (

@@ -15,11 +15,12 @@
 
 .App-header {
   /*background-color: #282c34;*/
-  min-height: 100vh;
+  /*min-height: 100vh;*/
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /*justify-content: center;*/
   /*font-size: calc(10px + 2vmin);*/
   /*color: white;*/
 }
@@ -35,4 +36,25 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.page-link {
+  color: #6c757d !important;
+}
+.page-link:hover {
+  color: #fff !important;
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+.page-item.active .page-link {
+  color: #fff !important;
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+.navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .show>.nav-link {
+  font-weight: bolder !important;
+}
+
+.modal-dialog {
+  /*max-width: 300px !important;*/
 }

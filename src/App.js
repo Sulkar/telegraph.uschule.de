@@ -11,6 +11,7 @@ function App() {
     <MyContextProvider>
       <div className="App">
         <header className="App-header">
+          <h2>telegra.ph <span>buddy</span></h2>
           <MyNavbar />
           <Page />
         </header>

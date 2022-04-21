@@ -3,6 +3,7 @@ import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import Login from "./Login";
 import AccountInfo from "./AccountInfo";
+import AccountPages from "./AccountPages";
 
 export default function Page() {
   // Declare a new state variable, which we'll call "count"
@@ -40,7 +41,7 @@ export default function Page() {
   return (
     <>
       {myValues.currentPage === "accountInfo" ? <AccountInfo /> : ""}
-      {myValues.currentPage === "pageList" ? "pageList Page" : ""}
+      {myValues.currentPage === "pageList" ? <AccountPages /> : ""}
       {myValues.currentPage === "createAccount" ? "createAccount Page" : ""}
       {myValues.currentPage === "login" ? <Login /> : ""}
       {myValues.currentPage === "logout" ? "Logout successful" : ""}

@@ -55,7 +55,7 @@ export default function MyNavbar() {
   };
 
   return (
-    <Navbar bg="light" expand="lg" style={compStyle.navbar}>
+    <Navbar collapseOnSelect bg="light" expand="lg" style={compStyle.navbar}>
       <Container style={compStyle.container}>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -65,6 +65,7 @@ export default function MyNavbar() {
                 <Nav.Link
                   href="#accountInfo"
                   onClick={() => handleClick("accountInfo")}
+                  className={myValues.currentPage === "accountInfo" ? "active" : ""}
                 >
                   Account Info
                 </Nav.Link>
@@ -87,7 +88,7 @@ export default function MyNavbar() {
                 >
                   create Account
                 </Nav.Link>
-                <Nav.Link href="#login" onClick={() => handleClick("login")}>
+                <Nav.Link href="#login" onClick={() => handleClick("login")} className={myValues.currentPage === "login" ? "active" : ""}>
                   Login
                 </Nav.Link>
               </>
