@@ -13,6 +13,7 @@ To quickly write and publish posts and manage them using anonymous accounts.
 - View a list of your posts with corresponding view stats.
 - Edit posts and create new one.
 
+Want to download your telegra.ph post as HTML files and images with image lightbox option? Try [telegra.ph-scraper](https://github.com/Sulkar/telegra.ph-scraper)
 # Images:
 
 ![](images/tbuddy2.png)
