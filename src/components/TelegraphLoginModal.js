@@ -1,41 +1,25 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Button, Modal } from "react-bootstrap";
+import React, { useState, useContext, useEffect, useRef } from "react";
+import { Form, Button, Spinner, Modal } from "react-bootstrap";
 import { MyContext } from "./MyContext";
-import QRCode from "qrcode";
 
-export default function AccessTokenModal({ backdrop, redirectPage }) {
+export default function TelegraphLoginModal() {
   const [myValues, setMyValues] = useContext(MyContext);
   const [accessTokenQrCode, setAccessTokenQrCode] = useState();
 
   const handleClose = () =>
     setMyValues((oldValues) => ({
       ...oldValues,
-      showAccessTokenModal: false,
-      currentPage:
-        redirectPage === undefined ? myValues.currentPage : redirectPage,
+      showTelegraphLoginModal: false,
     }));
 
-  useEffect(() => {
-    //get Account Information from telegra.ph api
-    QRCode.toDataURL(
-      "https://telegraph-buddy.unsere-schule.org/?at=" +
-        myValues.currentAccessToken
-    )
-      .then((qrCode) => {
-        setAccessTokenQrCode(qrCode);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
       <Modal
-        show={myValues.showAccessTokenModal}
+        show={myValues.showTelegraphLoginModal}
         onHide={handleClose}
         size="sm"
-        backdrop={backdrop}
       >
         <Modal.Body>
           <div
@@ -47,7 +31,7 @@ export default function AccessTokenModal({ backdrop, redirectPage }) {
           >
             <div>telegraph-buddy.org</div>
             <div>Access Token for {myValues.currentShortName}</div>
-            <img src={accessTokenQrCode} alt="qrCode" />
+            <img src={accessTokenQrCode} />
             <div style={{ wordBreak: "break-all", textAlign: "center" }}>
               {myValues.currentAccessToken}
             </div>

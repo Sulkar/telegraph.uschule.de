@@ -3,13 +3,13 @@ import { InputGroup, FormControl, Button, Spinner } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import axios from "axios";
 import QrScannerVideo from "./QrScannerVideo";
+import MyAlert from "./MyAlert";
 
 export default function Login() {
-  // Declare a new state variable, which we'll call "count"
-
   const [myValues, setMyValues] = useContext(MyContext);
   const [loading, setLoading] = useState(false);
   const [loginUrl, setLoginUrl] = useState("");
+  const [tempAlert, setTempAlert] = useState();
 
   var compStyle = {
     video: { maxWidth: "500px", marginBottom: "10px" },
@@ -37,26 +37,43 @@ export default function Login() {
     axios
       .post(apiCallGetAccountInfo)
       .then(function (response) {
-        setLoading(false);
         if (response.data.ok) {
-          setLoginUrl(response.data.result.auth_url);
-          setMyValues((oldValues) => ({
-            ...oldValues,
-            loggedIn: true,
-            currentPage: "accountInfo",
-          }));
-          //redirect to logged in telegra.ph page in new tab/window
-          //window.open(response.data.result.auth_url, "_blank");
+          setLoading(false);
           localStorage.setItem("access_token", myValues.currentAccessToken);
+          setLoginUrl(response.data.result.auth_url);
+          setTempAlert(
+            <MyAlert
+              type="success"
+              title="Access Token checked"
+              value="Your token is correct. Now you can log in to telegra.ph!"
+            />
+          );
         } else {
-          console.log(response.data.error);
+          setLoading(false);
+          setTempAlert(
+            <MyAlert type="danger" title="Error" value={response.data.error} />
+          );
         }
       })
       .catch(function (error) {
-        console.log(error);
+        setLoading(false);
+        setTempAlert(<MyAlert type="danger" title="Error" value={error} />);
       });
   }
 
+  function handleCancel() {
+    localStorage.setItem("access_token", "");
+    setLoginUrl("");
+    setTempAlert();
+  }
+
+  function handleTelegraphLogin() {
+    setMyValues((oldValues) => ({
+      ...oldValues,
+      loggedIn: true,
+      currentPage: "accountInfo",
+    }));
+  }
   function onInputchange(event) {
     setMyValues((oldValues) => ({
       ...oldValues,
@@ -66,13 +83,12 @@ export default function Login() {
 
   return (
     <>
-     
-     <div style={{marginTop: "20px"}}></div>
-      <QrScannerVideo />
-
+      <div style={{ marginTop: "20px" }}></div>
+      {loginUrl === "" ? <QrScannerVideo /> : ""}
+      {tempAlert}
       {loading ? (
         <Spinner animation="border" variant="secondary" />
-      ) : (
+      ) : loginUrl === "" ? (
         <InputGroup className="mb-3" style={compStyle.inputGroup}>
           <FormControl
             placeholder="Access Token"
@@ -81,14 +97,37 @@ export default function Login() {
             value={myValues.currentAccessToken}
             onChange={onInputchange}
           />
+
           <Button
             variant="outline-secondary"
             id="button-addon2"
             onClick={() => handleLogin()}
           >
-            login
+            check
           </Button>
         </InputGroup>
+      ) : (
+        <>
+          <div>
+            <Button
+              variant="outline-secondary"
+              id="button-addon2"
+              style={{ marginRight: "5px" }}
+              onClick={() => handleCancel()}
+            >
+              cancel
+            </Button>
+            <a href={loginUrl} target="_blank" rel="noreferrer">
+              <Button
+                variant="outline-secondary"
+                id="button-addon2"
+                onClick={() => handleTelegraphLogin()}
+              >
+                login
+              </Button>
+            </a>
+          </div>
+        </>
       )}
     </>
   );

@@ -159,30 +159,8 @@ export default function AccountPages() {
     setPaginationItems(tempItems);
   }
 
-  async function handleCreateNewPage() {
-    myValues.qrCodeScanner.stop();
-    setLoading(true);
-    const telegraphAccountInfo =
-      "https://api.telegra.ph/getAccountInfo?access_token=";
-
-    const telegraphFields = '&fields=["auth_url"]';
-    const apiCallGetAccountInfo =
-      telegraphAccountInfo + myValues.currentAccessToken + telegraphFields;
-
-    axios
-      .post(apiCallGetAccountInfo)
-      .then(function (response) {
-        setLoading(false);
-        if (response.data.ok) {
-          //redirect to logged in telegra.ph page in new tab/window
-          window.open(response.data.result.auth_url, "_blank");
-        } else {
-          console.log(response.data.error);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  function handleCreateNewPage() {
+    window.open("https://telegra.ph/", "_blank");
   }
 
   function handleRefreshPages() {
@@ -206,7 +184,14 @@ export default function AccountPages() {
 
   return (
     <>
-      <div style={{ display: "flex", gap: "5px", alignItems: "center", marginTop: "20px"}}>
+      <div
+        style={{
+          display: "flex",
+          gap: "5px",
+          alignItems: "center",
+          marginTop: "20px",
+        }}
+      >
         <Button
           key="refreshPage"
           onClick={handleRefreshPages}

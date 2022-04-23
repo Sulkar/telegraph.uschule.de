@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { InputGroup, FormControl, Button, Spinner } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import QrScanner from "qr-scanner";
 
@@ -14,10 +14,18 @@ export default function QrScannerVideo() {
     const scanner = new QrScanner(
       myContainer.current,
       (result) => {
+        const access_token = result.data.replace(
+          "https://telegraph-buddy.unsere-schule.org/?at=",
+          ""
+        );
         setMyValues((oldValues) => ({
           ...oldValues,
-          currentAccessToken: result.data,
+          currentAccessToken: access_token,
         }));
+        //code found
+        setScannerHeight("0px");
+        scanner.stop();
+        setScanning(false);
       },
       { returnDetailedScanResult: true, highlightScanRegion: true }
     );

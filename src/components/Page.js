@@ -1,22 +1,33 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import Login from "./Login";
 import AccountInfo from "./AccountInfo";
 import AccountPages from "./AccountPages";
+import CreateAccount from "./CreateAccount";
 
 export default function Page() {
   // Declare a new state variable, which we'll call "count"
 
   const [myValues, setMyValues] = useContext(MyContext);
+  const [urlAccessToken, setUrlAccessToken] = useState("");
+
+  function getUrlAccessToken() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    setUrlAccessToken(urlParams.get("at"));
+  }
 
   useEffect(() => {
-    const access_token = localStorage.getItem("access_token") || "";
+    getUrlAccessToken();
     let currentPage = "login";
     let loggedIn = false;
-    if (access_token !== "") {
-      currentPage = "accountInfo";
-      loggedIn = true;
+    let access_token = urlAccessToken;
+    if (access_token === null) {
+      access_token = localStorage.getItem("access_token") || "";
+      if (access_token !== "") {
+        currentPage = "accountInfo";
+        loggedIn = true;
+      }
     }
     setMyValues((oldValues) => ({
       ...oldValues,
@@ -24,25 +35,13 @@ export default function Page() {
       currentPage: currentPage,
       loggedIn: loggedIn,
     }));
-  }, [setMyValues]);
-
-  var compStyle = {
-    container: { justifyContent: "center" },
-    navbar: {
-      borderRadius: "20px",
-    },
-    button: {
-      margin: "2px",
-    },
-  };
-
-  const handleClick = (type) => {};
+  }, [urlAccessToken]);
 
   return (
     <>
       {myValues.currentPage === "accountInfo" ? <AccountInfo /> : ""}
       {myValues.currentPage === "pageList" ? <AccountPages /> : ""}
-      {myValues.currentPage === "createAccount" ? "createAccount Page" : ""}
+      {myValues.currentPage === "createAccount" ? <CreateAccount /> : ""}
       {myValues.currentPage === "login" ? <Login /> : ""}
       {myValues.currentPage === "logout" ? "Logout successful" : ""}
     </>

@@ -42,12 +42,17 @@ export default function MyNavbar() {
         break;
       case "logout":
         setMyValues((oldValues) => ({
-          ...oldValues,
+          qrCodeScanner: null,
           loggedIn: false,
+          currentPage: "login",
           currentAccessToken: "",
-          currentPage: "logout",
+          currentAuthorName: "",
+          currentShortName: "",
+          currentAuthorUrl: "",
+          currentPageCount: "",
+          showAccessTokenModal: false,
         }));
-        localStorage.setItem("access_token", "");        
+        localStorage.setItem("access_token", "");
         break;
       default:
         break;
@@ -65,7 +70,9 @@ export default function MyNavbar() {
                 <Nav.Link
                   href="#accountInfo"
                   onClick={() => handleClick("accountInfo")}
-                  className={myValues.currentPage === "accountInfo" ? "active" : ""}
+                  className={
+                    myValues.currentPage === "accountInfo" ? "active" : ""
+                  }
                 >
                   Account Info
                 </Nav.Link>
@@ -88,7 +95,11 @@ export default function MyNavbar() {
                 >
                   create Account
                 </Nav.Link>
-                <Nav.Link href="#login" onClick={() => handleClick("login")} className={myValues.currentPage === "login" ? "active" : ""}>
+                <Nav.Link
+                  href="#login"
+                  onClick={() => handleClick("login")}
+                  className={myValues.currentPage === "login" ? "active" : ""}
+                >
                   Login
                 </Nav.Link>
               </>
