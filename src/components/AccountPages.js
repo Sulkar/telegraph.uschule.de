@@ -20,14 +20,14 @@ export default function AccountPages() {
   const [pagesPerSite, setPagesPerSite] = useState(10);
   const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
 
-  async function getAccountPages(tempPaginationPage, currentLimit) {
+  async function getAccountPages(tempPaginationPage) {
     setLoading(true);
     const telegraphAccountPages =
       "https://api.telegra.ph/getPageList?access_token=";
 
-    let offset = tempPaginationPage * currentLimit - currentLimit;
+    let offset = tempPaginationPage * pagesPerSite - pagesPerSite;
 
-    const limit = currentLimit;
+    const limit = pagesPerSite;
     const apiCallGetAccountPages =
       telegraphAccountPages +
       myValues.currentAccessToken +
@@ -86,7 +86,7 @@ export default function AccountPages() {
 
   function handlePaginationClick(number) {
     setCurrentPaginationPage(number);
-    getAccountPages(number, pagesPerSite);
+    getAccountPages(number);
     updatePaginationToolbar(number);
   }
 
@@ -178,7 +178,7 @@ export default function AccountPages() {
 
   useEffect(() => {
     //get Account Information from telegra.ph api
-    getAccountPages(1, pagesPerSite);
+    getAccountPages(1);
     updatePaginationToolbar(1);
   }, []);
 
