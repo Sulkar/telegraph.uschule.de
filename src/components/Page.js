@@ -29,11 +29,14 @@ export default function Page() {
         loggedIn = true;
       }
     }
+    const pagesPerSiteLocalStorage =
+      localStorage.getItem("pages_per_site") || 10;
     setMyValues((oldValues) => ({
       ...oldValues,
       currentAccessToken: access_token,
       currentPage: currentPage,
       loggedIn: loggedIn,
+      pagesPerSite: pagesPerSiteLocalStorage,
     }));
   }, [urlAccessToken]);
 

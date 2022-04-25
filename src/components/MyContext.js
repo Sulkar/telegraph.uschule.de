@@ -13,6 +13,8 @@ function MyContextProvider(props) {
     currentAuthorUrl: "",
     currentPageCount: "",
     showAccessTokenModal: false,
+    currentPaginationPage: 1,
+    pagesPerSite: 10,
   });
 
   return (

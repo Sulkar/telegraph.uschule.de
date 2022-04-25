@@ -42,13 +42,13 @@ export default function CreateAccount() {
           }));
         } else {
           setTempAlert(
-            <MyAlert type="danger" title="Error" value={response.data.error} />
+            <MyAlert type="danger" title="error" value={response.data.error} />
           );
         }
       })
       .catch(function (error) {
         setLoading(false);
-        setTempAlert(<MyAlert type="danger" title="Error" value={error} />);
+        setTempAlert(<MyAlert type="danger" title="error" value={error} />);
       });
   }
 
@@ -89,30 +89,30 @@ export default function CreateAccount() {
       ) : (
         <Form style={{ textAlign: "left", marginTop: "10px" }}>
           <Form.Group className="mb-3" controlId="formShortName">
-            <Form.Label>Short name*</Form.Label>
+            <Form.Label>short name*</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter short name"
+              placeholder="enter short name"
               value={form1Value}
               onChange={onInputchangeShortName}
             />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formAuthorName">
-            <Form.Label>Author name</Form.Label>
+            <Form.Label>author name</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter author name"
+              placeholder="enter author name"
               value={form2Value}
               onChange={onInputchangeAuthorName}
             />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formAuthorUrl">
-            <Form.Label>Author url</Form.Label>
+            <Form.Label>author url</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter author url"
+              placeholder="enter author url"
               value={form3Value}
               onChange={onInputchangeAuthorUrl}
             />
@@ -123,7 +123,7 @@ export default function CreateAccount() {
             type="button"
             onClick={handleUpdateInfoClick}
           >
-            create Account
+            create account
           </Button>
         </Form>
       )}

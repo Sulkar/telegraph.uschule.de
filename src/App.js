@@ -11,10 +11,11 @@ function App() {
     <MyContextProvider>
       <div className="App">
         <header className="App-header">
-          <h2>telegra.ph <span>buddy</span></h2>
+          <h2 style={{marginTop: "20px"}}>telegra.ph <span>buddy</span></h2>
           <MyNavbar />
           <Page />
         </header>
+        <footer className="App-footer">with ❤️ by <a href="https://unsere-schule.org/">Richard Scheglmann</a></footer>
       </div>
     </MyContextProvider>
   );

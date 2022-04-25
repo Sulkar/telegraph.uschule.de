@@ -1,10 +1,9 @@
 import React, { useState, useContext } from "react";
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Container, Nav } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 
 export default function MyNavbar() {
   // Declare a new state variable, which we'll call "count"
-  const [count, setCount] = useState(0);
   const [myValues, setMyValues] = useContext(MyContext);
   var compStyle = {
     container: { justifyContent: "center" },
@@ -51,6 +50,8 @@ export default function MyNavbar() {
           currentAuthorUrl: "",
           currentPageCount: "",
           showAccessTokenModal: false,
+          currentPaginationPage: 1,
+          pagesPerSite: 10,
         }));
         localStorage.setItem("access_token", "");
         break;
@@ -60,7 +61,7 @@ export default function MyNavbar() {
   };
 
   return (
-    <Navbar collapseOnSelect bg="light" expand="lg" style={compStyle.navbar}>
+    <Navbar collapseOnSelect bg="light" expand="sm" style={compStyle.navbar}>
       <Container style={compStyle.container}>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -74,17 +75,17 @@ export default function MyNavbar() {
                     myValues.currentPage === "accountInfo" ? "active" : ""
                   }
                 >
-                  Account Info
+                  account
                 </Nav.Link>
                 <Nav.Link
                   href="#pageList"
                   onClick={() => handleClick("pageList")}
                 >
-                  Page List
+                  pages
                 </Nav.Link>
 
                 <Nav.Link href="#logout" onClick={() => handleClick("logout")}>
-                  Logout
+                  logout
                 </Nav.Link>
               </>
             ) : (
@@ -93,14 +94,14 @@ export default function MyNavbar() {
                   href="#createAccount"
                   onClick={() => handleClick("createAccount")}
                 >
-                  create Account
+                  create account
                 </Nav.Link>
                 <Nav.Link
                   href="#login"
                   onClick={() => handleClick("login")}
                   className={myValues.currentPage === "login" ? "active" : ""}
                 >
-                  Login
+                  login
                 </Nav.Link>
               </>
             )}

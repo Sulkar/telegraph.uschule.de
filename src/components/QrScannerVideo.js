@@ -70,7 +70,7 @@ export default function QrScannerVideo() {
         style={{ marginBottom: "10px" }}
         onClick={() => handleQrCodeScanner()}
       >
-        QR Code
+        QR code
       </Button>
     </>
   );

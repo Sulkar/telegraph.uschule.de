@@ -1,33 +1,31 @@
 import React, { useState, useContext, useEffect } from "react";
-import {
-  Button,
-  Spinner,
-  ListGroup,
-  Pagination,
-  InputGroup,
-  FormControl,
-} from "react-bootstrap";
+import { Button, InputGroup, FormControl, ProgressBar } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import axios from "axios";
+import PagesTable from "./PagesTable";
 
 export default function AccountPages() {
-  // Declare a new state variable, which we'll call "count"
-
   const [myValues, setMyValues] = useContext(MyContext);
   const [loading, setLoading] = useState(false);
   const [pageArray, setPageArray] = useState([]);
-  const [paginationItems, setPaginationItems] = useState([]);
-  const [pagesPerSite, setPagesPerSite] = useState(10);
-  const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
+  const [pagePerSiteInput, setPagePerSiteInput] = useState(
+    myValues.pagesPerSite
+  );
+
+  const [pageLoadingProgress, setPageLoadingProgress] = useState(0);
+
+  //access_token: b968da509bb76866c35425099bc0989a5ec3b32997d55286c657e6994bbb
+  let allPageArray = [];
 
   async function getAccountPages(tempPaginationPage) {
     setLoading(true);
     const telegraphAccountPages =
       "https://api.telegra.ph/getPageList?access_token=";
 
-    let offset = tempPaginationPage * pagesPerSite - pagesPerSite;
+    let offset =
+      tempPaginationPage * myValues.pagesPerSite - myValues.pagesPerSite;
 
-    const limit = pagesPerSite;
+    const limit = myValues.pagesPerSite;
     const apiCallGetAccountPages =
       telegraphAccountPages +
       myValues.currentAccessToken +
@@ -39,16 +37,13 @@ export default function AccountPages() {
     axios
       .post(apiCallGetAccountPages)
       .then(function (response) {
-        setLoading(false);
         if (response.data.ok) {
           //update current page count
           setMyValues((oldValues) => ({
             ...oldValues,
             currentPageCount: response.data.result.total_count,
           }));
-          fillPageArray(response.data.result.pages);
-
-          ///
+          fillPageArray(response.data.result.pages, tempPaginationPage);
         } else {
           console.log(response.data.error);
         }
@@ -58,105 +53,55 @@ export default function AccountPages() {
       });
   }
 
-  function fillPageArray(telegraphPages) {
+  function fillPageArray(telegraphPages, tempPaginationPage) {
     let tempPageArray = [];
     telegraphPages.forEach((element) => {
       let newPageObject = {
         title: element.title,
         url: element.url,
         views: element.views,
-        pageDate: getPostDate(element.url),
+        pageDate: getPostDate(element),
       };
       tempPageArray.push(newPageObject);
     });
-    setPageArray(tempPageArray);
+
+    allPageArray.push(...tempPageArray);
+
+    //update progress bar
+    const percent =
+      Math.round(
+        ((allPageArray.length * 100) / myValues.currentPageCount) * 100
+      ) / 100;
+    setPageLoadingProgress(percent);
+
+    //check for maxpages
+    if (allPageArray.length < myValues.currentPageCount) {
+      setTimeout(() => {
+        getAccountPages(tempPaginationPage + 1);
+      }, 50);
+    } else {
+      setLoading(false);
+      setPageArray(allPageArray);
+    }
   }
 
-  function getPostDate(elementUrl) {
-    let tempInfo = elementUrl.match(/-(\d+)(-(\d+)$|-(\d+)-\d+$)/);
+  function getPostDate(element) {
     let tempDate = "";
-    tempDate += tempInfo[1] + "-";
-    if (tempInfo[3] === undefined) {
-      tempDate += tempInfo[4];
+    let customDate = element.description.match(/\[date=([0-9-]+)/);
+    if (customDate !== null && customDate[1] !== undefined) {
+      tempDate = customDate[1];
     } else {
-      tempDate += tempInfo[3];
+      let tempInfo = element.url.match(/-(\d+)(-(\d+)$|-(\d+)-\d+$)/);
+
+      tempDate += tempInfo[1] + "-";
+      if (tempInfo[3] === undefined) {
+        tempDate += tempInfo[4];
+      } else {
+        tempDate += tempInfo[3];
+      }
+      tempDate = new Date().getFullYear() + "-" + tempDate;
     }
     return tempDate;
-  }
-
-  function handlePaginationClick(number) {
-    setCurrentPaginationPage(number);
-    getAccountPages(number);
-    updatePaginationToolbar(number);
-  }
-
-  function updatePaginationToolbar(activeItem) {
-    const maxPaginationButtons = 4;
-
-    let tempItems = [];
-    let maxPaginationPages = Math.ceil(
-      myValues.currentPageCount / pagesPerSite
-    );
-
-    //start page
-    let startPage =
-      activeItem <= maxPaginationButtons / 2
-        ? 1
-        : activeItem - maxPaginationButtons / 2;
-    //end page
-    let endPage = startPage + maxPaginationButtons;
-    endPage = maxPaginationPages < endPage ? maxPaginationPages : endPage;
-    //difference between start and end page
-    let diff =
-      endPage - startPage < maxPaginationButtons
-        ? maxPaginationButtons - (endPage - startPage)
-        : 0;
-
-    if (startPage - diff < 1) {
-      startPage = 1;
-    } else {
-      startPage -= diff;
-    }
-
-    //display first, prev buttons if:
-    if (startPage > 1) {
-      tempItems.push(
-        <Pagination.First onClick={() => handlePaginationClick(1)} />
-      );
-      tempItems.push(
-        <Pagination.Prev
-          onClick={() => handlePaginationClick(activeItem - 1)}
-        />
-      );
-    }
-
-    for (let number = startPage; number <= endPage; number++) {
-      tempItems.push(
-        <Pagination.Item
-          key={number}
-          active={number === activeItem}
-          onClick={() => handlePaginationClick(number)}
-        >
-          {number}
-        </Pagination.Item>
-      );
-    }
-
-    //display last, next buttons if:
-    if (endPage < maxPaginationPages) {
-      tempItems.push(
-        <Pagination.Next
-          onClick={() => handlePaginationClick(activeItem + 1)}
-        />
-      );
-      tempItems.push(
-        <Pagination.Last
-          onClick={() => handlePaginationClick(maxPaginationPages)}
-        />
-      );
-    }
-
-    setPaginationItems(tempItems);
   }
 
   function handleCreateNewPage() {
@@ -164,22 +109,26 @@ export default function AccountPages() {
   }
 
   function handleRefreshPages() {
-    handlePaginationClick(currentPaginationPage);
+    allPageArray = [];
+    getAccountPages(1);
   }
   function handleSetPagePerSite() {
-    handlePaginationClick(1);
+    setMyValues((oldValues) => ({
+      ...oldValues,
+      currentPaginationPage: 1,
+      pagesPerSite: pagePerSiteInput,
+    }));
+    localStorage.setItem("pages_per_site", pagePerSiteInput);
   }
 
   function onInputchange(event) {
     if (event.target.value.length <= 3) {
-      setPagesPerSite(event.target.value);
+      setPagePerSiteInput(event.target.value);
     }
   }
 
   useEffect(() => {
-    //get Account Information from telegra.ph api
     getAccountPages(1);
-    updatePaginationToolbar(1);
   }, []);
 
   return (
@@ -217,7 +166,7 @@ export default function AccountPages() {
           onClick={handleCreateNewPage}
           variant="outline-secondary"
         >
-          + new Page
+          + new page
         </Button>
 
         <InputGroup className="" style={{ width: "auto" }}>
@@ -226,66 +175,37 @@ export default function AccountPages() {
             placeholder="200"
             aria-label="Access Token"
             aria-describedby="basic-addon2"
-            value={pagesPerSite}
+            value={pagePerSiteInput}
             onChange={onInputchange}
           />
           <Button
             key="setPagesPerSite"
             variant="outline-secondary"
             id="button-addon2"
-            onClick={handleSetPagePerSite}
+            onClick={() => handleSetPagePerSite(1)}
           >
             set
           </Button>
         </InputGroup>
       </div>
       {loading ? (
-        <Spinner animation="border" variant="secondary" />
+        <>
+          <p style={{ marginTop: "20px" }}>
+            page count: {myValues.currentPageCount}
+          </p>
+          <ProgressBar
+            animated
+            now={pageLoadingProgress}
+            label={`${pageLoadingProgress}%`}
+            style={{ minWidth: "250px" }}
+          />
+        </>
       ) : (
         <>
-          <p style={{ marginTop: "1rem" }}>
-            Pagecount: {myValues.currentPageCount}
+          <p style={{ marginTop: "20px" }}>
+            page count: {myValues.currentPageCount}
           </p>
-          <ListGroup variant="flush" style={{ width: "90%" }}>
-            <ListGroup.Item
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-              key={"header"}
-            >
-              <span>Post title</span>
-
-              <div>
-                <span>views</span>
-                <span>&nbsp;|&nbsp;</span>
-                <span>date</span>
-              </div>
-            </ListGroup.Item>
-            {pageArray.map((page) => (
-              <ListGroup.Item
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-                key={page.url}
-              >
-                <a href={page.url} target="_blank" rel="noreferrer">
-                  {page.title}
-                </a>
-
-                <div>
-                  <span>{page.views}</span>
-                  <span>&nbsp;|&nbsp;</span>
-                  <span>{page.pageDate}</span>
-                </div>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-
-          <Pagination>{paginationItems}</Pagination>
+          <PagesTable pageArray={pageArray} />
         </>
       )}
     </>

@@ -38,26 +38,25 @@ export default function Login() {
       .post(apiCallGetAccountInfo)
       .then(function (response) {
         if (response.data.ok) {
-          setLoading(false);
-          localStorage.setItem("access_token", myValues.currentAccessToken);
+          setLoading(false);          
           setLoginUrl(response.data.result.auth_url);
           setTempAlert(
             <MyAlert
               type="success"
-              title="Access Token checked"
-              value="Your token is correct. Now you can log in to telegra.ph!"
+              title="access token checked"
+              value={response.data.result.short_name + ", your token is correct. Now you can log in to telegra.ph!"}
             />
           );
         } else {
           setLoading(false);
           setTempAlert(
-            <MyAlert type="danger" title="Error" value={response.data.error} />
+            <MyAlert type="danger" title="error" value={response.data.error} />
           );
         }
       })
       .catch(function (error) {
         setLoading(false);
-        setTempAlert(<MyAlert type="danger" title="Error" value={error} />);
+        setTempAlert(<MyAlert type="danger" title="error" value={error} />);
       });
   }
 
@@ -68,6 +67,7 @@ export default function Login() {
   }
 
   function handleTelegraphLogin() {
+    localStorage.setItem("access_token", myValues.currentAccessToken);
     setMyValues((oldValues) => ({
       ...oldValues,
       loggedIn: true,
@@ -91,7 +91,7 @@ export default function Login() {
       ) : loginUrl === "" ? (
         <InputGroup className="mb-3" style={compStyle.inputGroup}>
           <FormControl
-            placeholder="Access Token"
+            placeholder="access token"
             aria-label="Access Token"
             aria-describedby="basic-addon2"
             value={myValues.currentAccessToken}
