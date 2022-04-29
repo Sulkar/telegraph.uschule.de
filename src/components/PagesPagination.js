@@ -11,9 +11,18 @@ export default function PagesPagination() {
     const maxPaginationButtons = 4;
 
     let tempItems = [];
-    let maxPaginationPages = Math.ceil(
-      myValues.currentPageCount / myValues.pagesPerSite
-    );
+    let maxPaginationPages = 0;
+
+    if (myValues.showDeletedPages) {
+      maxPaginationPages = Math.ceil(
+        myValues.currentPageCount / myValues.pagesPerSite
+      );
+    } else {
+      maxPaginationPages = Math.ceil(
+        (myValues.currentPageCount - myValues.currentDeletedPages) /
+          myValues.pagesPerSite
+      );
+    }
 
     //start page
     let startPage =
@@ -92,7 +101,7 @@ export default function PagesPagination() {
 
   useEffect(() => {
     updatePaginationToolbar(myValues.currentPaginationPage);
-  }, [myValues.currentPaginationPage, myValues.pagesPerSite]);
+  }, [myValues.currentPaginationPage, myValues.pagesPerSite, myValues.showDeletedPages]);
 
   return (
     <>

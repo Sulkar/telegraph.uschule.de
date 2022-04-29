@@ -45,7 +45,7 @@ export default function AccessTokenModal({ backdrop, redirectPage }) {
               alignItems: "center",
             }}
           >
-            <div>telegraph-buddy.org</div>
+            <div style={{fontWeight: "bolder"}}>telegraph-buddy.org</div>
             <div>Access Token for {myValues.currentShortName}</div>
             <img src={accessTokenQrCode} alt="qrCode" />
             <div style={{ wordBreak: "break-all", textAlign: "center" }}>
@@ -54,7 +54,7 @@ export default function AccessTokenModal({ backdrop, redirectPage }) {
           </div>
         </Modal.Body>
         <Modal.Footer style={{ justifyContent: "center" }}>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="outline-secondary" onClick={handleClose}>
             Close
           </Button>
         </Modal.Footer>

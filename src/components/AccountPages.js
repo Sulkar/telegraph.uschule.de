@@ -3,29 +3,31 @@ import { Button, InputGroup, FormControl, ProgressBar } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import axios from "axios";
 import PagesTable from "./PagesTable";
+import DeletePageModal from "./DeltePageModal";
 
 export default function AccountPages() {
   const [myValues, setMyValues] = useContext(MyContext);
   const [loading, setLoading] = useState(false);
   const [pageArray, setPageArray] = useState([]);
+  const [fetchedPages, setFetchedPages] = useState(0);
   const [pagePerSiteInput, setPagePerSiteInput] = useState(
     myValues.pagesPerSite
   );
 
   const [pageLoadingProgress, setPageLoadingProgress] = useState(0);
 
-  //access_token: b968da509bb76866c35425099bc0989a5ec3b32997d55286c657e6994bbb
-  let allPageArray = [];
+  let tempAllPageArray = [];
+  let tempDeletedPages = 0;
 
   async function getAccountPages(tempPaginationPage) {
     setLoading(true);
     const telegraphAccountPages =
       "https://api.telegra.ph/getPageList?access_token=";
 
-    let offset =
-      tempPaginationPage * myValues.pagesPerSite - myValues.pagesPerSite;
+    const limit = 200;
 
-    const limit = myValues.pagesPerSite;
+    let offset = tempPaginationPage * limit - limit;
+
     const apiCallGetAccountPages =
       telegraphAccountPages +
       myValues.currentAccessToken +
@@ -56,32 +58,50 @@ export default function AccountPages() {
   function fillPageArray(telegraphPages, tempPaginationPage) {
     let tempPageArray = [];
     telegraphPages.forEach((element) => {
+      //dont display "deleted" pages
       let newPageObject = {
+        path: element.path,
         title: element.title,
         url: element.url,
         views: element.views,
         pageDate: getPostDate(element),
+        deleted: false,
       };
+
+      if (element.title !== "...") {
+        newPageObject.deleted = false;
+      } else {
+        newPageObject.deleted = true;
+        tempDeletedPages++;
+      }
       tempPageArray.push(newPageObject);
     });
 
-    allPageArray.push(...tempPageArray);
+    tempAllPageArray.push(...tempPageArray);
+    const fetchedPages = tempAllPageArray.length;
+    setFetchedPages(fetchedPages);
 
     //update progress bar
     const percent =
-      Math.round(
-        ((allPageArray.length * 100) / myValues.currentPageCount) * 100
-      ) / 100;
+      Math.floor(((fetchedPages * 100) / myValues.currentPageCount) * 100) /
+      100;
     setPageLoadingProgress(percent);
 
     //check for maxpages
-    if (allPageArray.length < myValues.currentPageCount) {
+    if (
+      tempAllPageArray.length + tempDeletedPages <
+      myValues.currentPageCount
+    ) {
       setTimeout(() => {
         getAccountPages(tempPaginationPage + 1);
-      }, 50);
+      }, 100);
     } else {
       setLoading(false);
-      setPageArray(allPageArray);
+      setPageArray(tempAllPageArray);
+      setMyValues((oldValues) => ({
+        ...oldValues,
+        currentDeletedPages: tempDeletedPages,
+      }));
     }
   }
 
@@ -109,7 +129,8 @@ export default function AccountPages() {
   }
 
   function handleRefreshPages() {
-    allPageArray = [];
+    tempAllPageArray = [];
+    tempDeletedPages = 0;
     getAccountPages(1);
   }
   function handleSetPagePerSite() {
@@ -127,9 +148,20 @@ export default function AccountPages() {
     }
   }
 
+  function handleShowHideDeletedPages() {
+    setMyValues((oldValues) => ({
+      ...oldValues,
+      showDeletedPages: !myValues.showDeletedPages,
+      currentPaginationPage: 1,
+    }));
+  }
+
   useEffect(() => {
-    getAccountPages(1);
-  }, []);
+    if (!myValues.showDeletePageModal) {
+      console.log("only in");
+      getAccountPages(1);
+    }
+  }, [myValues.showDeletePageModal]);
 
   return (
     <>
@@ -190,21 +222,52 @@ export default function AccountPages() {
       </div>
       {loading ? (
         <>
-          <p style={{ marginTop: "20px" }}>
-            page count: {myValues.currentPageCount}
-          </p>
           <ProgressBar
             animated
             now={pageLoadingProgress}
-            label={`${pageLoadingProgress}%`}
-            style={{ minWidth: "250px" }}
+            style={{ minWidth: "250px", marginTop: "20px" }}
           />
+          <span>
+            {pageLoadingProgress} % ( {fetchedPages} pages ){" "}
+          </span>
         </>
       ) : (
         <>
           <p style={{ marginTop: "20px" }}>
-            page count: {myValues.currentPageCount}
+            page count: {myValues.currentPageCount} - (
+            {myValues.currentDeletedPages} pages deleted{" "}
+            <span
+              style={{ cursor: "pointer" }}
+              onClick={() => handleShowHideDeletedPages()}
+            >
+              {myValues.showDeletedPages ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z" />
+                  <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
+                  <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                </svg>
+              )}
+            </span>
+            )
           </p>
+          <DeletePageModal />
           <PagesTable pageArray={pageArray} />
         </>
       )}
