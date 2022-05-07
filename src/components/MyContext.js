@@ -13,6 +13,7 @@ function MyContextProvider(props) {
     currentAuthorUrl: "",
     currentPageCount: "",
     showAccessTokenModal: false,
+    showAddPageModal: false,
     showDeletePageModal: false,
     showDeletedPages: false,
     deletePagePath: "",

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { Button, Spinner } from "react-bootstrap";
+import { Button, Spinner, Dropdown } from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import QrScanner from "qr-scanner";
 
@@ -8,7 +8,10 @@ export default function QrScannerVideo() {
   const [scanning, setScanning] = useState(false);
   const [loading, setLoading] = useState(false);
   const myContainer = useRef(null);
-  const [scannerHeight, setScannerHeight] = useState("0px");
+  const [displayScanner, setDisplayScanner] = useState("none");
+
+  const [cameraItems, setCameraItems] = useState([]);
+  const [currentCamera, setCurrentCamera] = useState([]);
 
   useEffect(() => {
     const scanner = new QrScanner(
@@ -22,10 +25,9 @@ export default function QrScannerVideo() {
           ...oldValues,
           currentAccessToken: access_token,
         }));
-        //code found
-        setScannerHeight("0px");
         scanner.stop();
         setScanning(false);
+        setDisplayScanner("none");
       },
       { returnDetailedScanResult: true, highlightScanRegion: true }
     );
@@ -33,36 +35,87 @@ export default function QrScannerVideo() {
       ...oldValues,
       qrCodeScanner: scanner,
     }));
+    listAvailableCameras();
   }, [setMyValues]);
+
+  function listAvailableCameras() {
+    let tempCameraItems = [];
+    QrScanner.listCameras().then((cameras) => {
+      cameras.forEach((camera) => {
+        tempCameraItems.push(
+          <Dropdown.Item
+            key={camera.id}
+            href="#/action-1"
+            onClick={() => handleChangeCamera(camera.id)}
+          >
+            {camera.label}
+          </Dropdown.Item>
+        );
+      });
+
+      setCameraItems(tempCameraItems);
+    });
+  }
+
+  function handleChangeCamera(selectedCameraId) {
+    setCurrentCamera(selectedCameraId);
+  }
 
   function handleQrCodeScanner() {
     if (scanning) {
-      setScannerHeight("0px");
+      setDisplayScanner("none");
       myValues.qrCodeScanner.stop();
       setScanning(false);
     } else {
       setLoading(true);
       myValues.qrCodeScanner.start().then(function () {
-        setScannerHeight("200px");
+        setDisplayScanner("block");
         setScanning(true);
         setLoading(false);
       });
     }
   }
+  useEffect(() => {
+    if (myValues.qrCodeScanner != null) {
+      setLoading(true);
+      myValues.qrCodeScanner.setCamera(currentCamera).then(function () {
+        setLoading(false);
+      });
+    }
+  }, [currentCamera]);
 
   return (
     <>
-      {loading ? <Spinner animation="grow" /> : ""}
+      {loading ? (
+        <Spinner animation="grow" style={{ marginBottom: "10px" }} />
+      ) : (
+        ""
+      )}
 
-      <video
-        ref={myContainer}
-        id="qr-video"
+      <div
         style={{
-          maxWidth: "500px",
+          display: displayScanner,
+          textAlign: "center",
           marginBottom: "10px",
-          height: scannerHeight,
+          maxWidth: "500px",
         }}
-      ></video>
+      >
+        <video
+          ref={myContainer}
+          id="qr-video"
+          style={{
+            maxWidth: "100%",
+          }}
+        ></video>
+
+        <Dropdown>
+          <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
+            change camera
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>{cameraItems}</Dropdown.Menu>
+        </Dropdown>
+      </div>
 
       <Button
         variant="outline-secondary"

@@ -13,10 +13,6 @@ export default function DeletePageModal() {
 
   async function deletePage() {
     setLoading(true);
-    //edit page: https://api.telegra.ph/editPage/Sample-Page-12-15
-    //?access_token=b968da509bb76866c35425099bc0989a5ec3b32997d55286c657e6994bbb
-    //&title=...&author_name=...&content=[{"tag":"p","children":["..."]}]
-
     const telegraphEditPage = "https://api.telegra.ph/editPage/";
 
     const pagePath = myValues.deletePagePath;

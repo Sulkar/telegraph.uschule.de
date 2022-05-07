@@ -55,7 +55,7 @@ export default function AccessTokenModal({ backdrop, redirectPage }) {
         </Modal.Body>
         <Modal.Footer style={{ justifyContent: "center" }}>
           <Button variant="outline-secondary" onClick={handleClose}>
-            Close
+            close
           </Button>
         </Modal.Footer>
       </Modal>

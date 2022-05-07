@@ -86,6 +86,7 @@ export default function PagesTable({ pageArray }) {
     if (updatedPages.length > 0) {
       getCurrentPages(updatedPages);
     } else {
+      //on page load: first call
       getCurrentPages(pageArray);
     }
   }, [

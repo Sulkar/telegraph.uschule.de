@@ -1,9 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Button, InputGroup, FormControl, ProgressBar } from "react-bootstrap";
+import {
+  Button,
+  InputGroup,
+  FormControl,
+  ProgressBar,
+  Spinner,
+} from "react-bootstrap";
 import { MyContext } from "./MyContext";
 import axios from "axios";
 import PagesTable from "./PagesTable";
 import DeletePageModal from "./DeltePageModal";
+import AddPageModal from "./AddPageModal";
 
 export default function AccountPages() {
   const [myValues, setMyValues] = useContext(MyContext);
@@ -126,6 +133,10 @@ export default function AccountPages() {
 
   function handleCreateNewPage() {
     window.open("https://telegra.ph/", "_blank");
+    /*setMyValues((oldValues) => ({
+      ...oldValues,
+      showAddPageModal: true,
+    }));*/
   }
 
   function handleRefreshPages() {
@@ -158,7 +169,6 @@ export default function AccountPages() {
 
   useEffect(() => {
     if (!myValues.showDeletePageModal) {
-      console.log("only in");
       getAccountPages(1);
     }
   }, [myValues.showDeletePageModal]);
@@ -198,7 +208,7 @@ export default function AccountPages() {
           onClick={handleCreateNewPage}
           variant="outline-secondary"
         >
-          + new page
+          + page
         </Button>
 
         <InputGroup className="" style={{ width: "auto" }}>
@@ -222,10 +232,11 @@ export default function AccountPages() {
       </div>
       {loading ? (
         <>
+          <Spinner animation="grow" style={{ marginTop: "10px" }} />
           <ProgressBar
             animated
             now={pageLoadingProgress}
-            style={{ minWidth: "250px", marginTop: "20px" }}
+            style={{ minWidth: "250px", marginTop: "10px" }}
           />
           <span>
             {pageLoadingProgress} % ( {fetchedPages} pages ){" "}
@@ -268,6 +279,7 @@ export default function AccountPages() {
             )
           </p>
           <DeletePageModal />
+          <AddPageModal />
           <PagesTable pageArray={pageArray} />
         </>
       )}
