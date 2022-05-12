@@ -7,7 +7,7 @@ function MyContextProvider(props) {
     qrCodeScanner: null,
     loggedIn: false,
     currentPage: "login",
-    currentAccessToken: "",  
+    currentAccessToken: "",
     currentAuthorName: "",
     currentShortName: "",
     currentAuthorUrl: "",
@@ -23,6 +23,25 @@ function MyContextProvider(props) {
     currentPaginationPage: 1,
     currentSelectedPage: null,
     pagesPerSite: 10,
+    reset: function () {
+      this.qrCodeScanner = null;
+      this.loggedIn = false;
+      this.currentPage = "login";
+      this.currentAccessToken = "";
+      this.currentAuthorName = "";
+      this.currentShortName = "";
+      this.currentAuthorUrl = "";
+      this.currentPageCount = "";
+      this.showAccessTokenModal = false;
+      this.showQRCodeModal = false;
+      this.showAddPageModal = false;
+      this.showDeletePageModal = false;
+      this.showDeletedPages = false;
+      this.deletePagePath = "";
+      this.deletePageTitle = "";
+      this.currentPaginationPage = 1;
+      this.currentSelectedPage = null;
+    },
   });
 
   return (

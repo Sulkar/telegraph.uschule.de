@@ -1,6 +1,5 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
-  Form,
   Button,
   Spinner,
   Modal,
@@ -14,9 +13,7 @@ export default function AddPageModal() {
   const [myValues, setMyValues] = useContext(MyContext);
   const [loading, setLoading] = useState(false);
   const [linkToNewPage, setLinkToNewPage] = useState(null);
-  const [copyPageUrl, setCopyPageUrl] = useState(
-    "https://telegra.ph/Sample-Page-12-15"
-  );
+  const [copyPageUrl, setCopyPageUrl] = useState("");
   const [modalText, setModalText] = useState(
     "Would you like to create a new page or copy an existing page?"
   );
@@ -35,12 +32,10 @@ export default function AddPageModal() {
       .then(function (response) {
         if (response.data.ok) {
           setLoading(false);
-          const content = JSON.stringify(response.data.result.content)
-            .replace(/\//g, "\\/")
-            .replace(/#/g, "%23");
+          const content = JSON.stringify(response.data.result.content);
           const title = response.data.result.title;
           setTimeout(() => {
-            //createTelegraphPage2(title, content);
+            createTelegraphPage(title, content);
           }, 100);
 
           setModalText("test  was deleted successfully!");
@@ -56,49 +51,27 @@ export default function AddPageModal() {
 
   async function createTelegraphPage(title, content) {
     setLoading(true);
-    const telegraphCreatePage = "https://api.telegra.ph/createPage";
-    const access_token = "?access_token=" + myValues.currentAccessToken;
-    const urlTitle = "&title=" + title;
-    const urlContent = "&content=" + content;
 
-    const apiCallCreatePage =
-      telegraphCreatePage + access_token + urlTitle + urlContent;
+    var data = new FormData();
+    data.append("access_token", myValues.currentAccessToken);
+    data.append("title", title);
+    data.append("content", content);
 
-    axios
-      .post(apiCallCreatePage)
+    var config = {
+      method: "post",
+      url: "https://api.telegra.ph/createPage",
+      headers: {
+        "content-type": "text/json",
+      },
+      data: data,
+    };
+
+    axios(config)
       .then(function (response) {
         if (response.data.ok) {
           setLoading(false);
           setLinkToNewPage(
-            <a href={response.data.result.url} target="_blank">
-              {response.data.result.title}
-            </a>
-          );
-        } else {
-          setLoading(false);
-          console.log(response.data.error);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-  async function createTelegraphPage2(title, content) {
-    setLoading(true);
-
-    axios
-      .post("https://api.telegra.ph/createPage", {
-        data: {
-          access_token: myValues.currentAccessToken,
-          title: title,
-          content: content,
-        },
-      })
-      .then(function (response) {
-        if (response.data.ok) {
-          setLoading(false);
-          setLinkToNewPage(
-            <a href={response.data.result.url} target="_blank">
+            <a href={response.data.result.url} target="_blank" rel="noreferrer">
               {response.data.result.title}
             </a>
           );
@@ -120,18 +93,9 @@ export default function AddPageModal() {
 
   const handleCopyPage = () => {
     getPageData();
-
-    /*if (showCopyPageInput) {
-      setShowCopyPageInput(false);
-    } else {
-      setShowCopyPageInput(true);
-    }*/
   };
   const handleCreateNewPage = () => {
-    //window.open("https://telegra.ph/", "_blank");
-    let tempContent =
-      '[{"tag":"p","children":["[date=2022-04-29]"]},{"tag":"h3","attrs":{"id":"Inhalt"},"children":["Inhalt"]},{"tag":"ul","children":[{"tag":"li","children":[{"tag":"a","attrs":{"href":"#Klassen"},"children":["Klassen"]}]},{"tag":"li","children":[{"tag":"a","attrs":{"href":"#Start-ins-Abenteuer"},"children":["Start ins Abenteuer"]}]}]},{"tag":"p","children":["Mit dem Update 33, welches zum 15 jährigen Jubiläum auf die Server gespielt wurde, wurde das Free to Play Spiel gehörig aufgebohrt. "]},{"tag":"p","children":["Nun stehen allen Spielern alle Inhalte kostenlos zur Verfügung, also alle bis jetzt erschienen Erweiterungen und auch alle Völker und Klassen. Die einzige Ausnahme ist eine neue Zwergenrasse und die Klasse Schläger. Diese müssen extra gekauft werden."]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/f3a587a508fd7cd69bcbb.png"}},{"tag":"figcaption","children":[""]}]},{"tag":"h3","attrs":{"id":"Die-Zeit-ist-reif-noch-einmal-das-Spiel-zu-spielen"},"children":["Die Zeit ist reif noch einmal das Spiel zu spielen"]},{"tag":"p","children":["Nach dem Download auf Steam wirst du gefragt, ob du zusätzlich 6 GB hochauflösende Dateien herunterladen möchtest. Das bringt das etwas ältere Spiel wahrscheinlich auf einen neueren Stand."]},{"tag":"p","children":["Nach dem Download kann man sich über die Webseite einen neuen Account erstellen:"]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/028d62c7c4494292169fe.png"}},{"tag":"figcaption","children":[""]}]},{"tag":"p","children":["Das ist ein bisschen "old school", da man keinerlei Feedback bekommt, ob der Accountname bereits vergeben ist oder nicht. Es werden einfach alle Felder wieder geleert, falls der Name nicht vorhanden ist :-)"]},{"tag":"p","children":["Natürlich wähle ich als Spielwelt einen RP (Role Playing) Server:"]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/eb452df9fb9d80065100f.png"}},{"tag":"figcaption","children":[""]}]},{"tag":"p","children":[{"tag":"br"}]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/2f27dc9b471c9d6264e6d.png"}},{"tag":"figcaption","children":["Klassenauswahl"]}]},{"tag":"p","children":["Seit dem letzten Spielen gibt es zwei neue Klassen. Der Beorninger ist ein Gestaltswandler mit Unterstützungsfähigkeiten und der Schläger ist eine neue Nahkampfklasse die mit der Ressource Wut kämpft."]},{"tag":"h3","attrs":{"id":"Klassen"},"children":["Klassen"]},{"tag":"p","children":[{"tag":"a","attrs":{"href":"#Inhalt"},"children":["zurück"]}]},{"tag":"p","children":["Eine Übersicht der zur Verfügung stehenden Klassen kann man auf Lotro-Wiki finden:"]},{"tag":"p","children":[{"tag":"a","attrs":{"href":"https://lotro-wiki.com/index.php/Class","target":"_blank"},"children":["https://lotro-wiki.com/index.php/Class"]}]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/320873121a4f6677ef840.png"}},{"tag":"figcaption","children":["P = Primary, S = Secondary"]}]},{"tag":"h3","attrs":{"id":"Start-ins-Abenteuer"},"children":["Start ins Abenteuer"]},{"tag":"h4","attrs":{"id":"Tag-1"},"children":["Tag 1"]},{"tag":"p","children":["Ich habe mich für einen Captain entschieden mit Namen Seikaul:"]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/15a6a8dc05f42d67e1ab3.jpg"}},{"tag":"figcaption","children":[""]}]},{"tag":"p","children":[{"tag":"br"}]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/2144447e1047dbc6e06d5.jpg"}},{"tag":"figcaption","children":["Karte von Archet"]}]},{"tag":"p","children":[{"tag":"br"}]},{"tag":"figure","children":[{"tag":"img","attrs":{"src":"/file/24381d8ba5c474392080d.jpg"}},{"tag":"figcaption","children":["Beim Kampf mit einem Wildschwein"]}]},{"tag":"p","children":["Nach ein paar Quests bin ich immer noch in ",{"tag":"strong","children":["Archet "]},"und Level 6 geworden. Jetzt kann ich einen Begleiter, einen Herald, beschwören, der an meiner Seite kämpft."]},{"tag":"h4","attrs":{"id":"Tag-2"},"children":["Tag 2"]},{"tag":"p","children":["ddd"]},{"tag":"p","children":[{"tag":"br"}]},{"tag":"p","children":[{"tag":"br"}]},{"tag":"p","children":[{"tag":"br"}]}]';
-    createTelegraphPage("Test", tempContent);
+    window.open("https://telegra.ph/", "_blank");
   };
 
   function onInputchange(event) {

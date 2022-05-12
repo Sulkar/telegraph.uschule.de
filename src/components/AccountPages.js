@@ -132,11 +132,11 @@ export default function AccountPages() {
   }
 
   function handleCreateNewPage() {
-    window.open("https://telegra.ph/", "_blank");
-    /*setMyValues((oldValues) => ({
+    //window.open("https://telegra.ph/", "_blank");
+    setMyValues((oldValues) => ({
       ...oldValues,
       showAddPageModal: true,
-    }));*/
+    }));
   }
 
   function handleRefreshPages() {
@@ -172,6 +172,12 @@ export default function AccountPages() {
       getAccountPages(1);
     }
   }, [myValues.showDeletePageModal]);
+
+  useEffect(() => {
+    if (!myValues.showAddPageModal) {
+      getAccountPages(1);
+    }
+  }, [myValues.showAddPageModal]);
 
   return (
     <>

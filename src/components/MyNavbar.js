@@ -40,18 +40,10 @@ export default function MyNavbar() {
         }));
         break;
       case "logout":
+        myValues.reset();
         setMyValues((oldValues) => ({
-          qrCodeScanner: null,
-          loggedIn: false,
+          ...oldValues,
           currentPage: "login",
-          currentAccessToken: "",
-          currentAuthorName: "",
-          currentShortName: "",
-          currentAuthorUrl: "",
-          currentPageCount: "",
-          showAccessTokenModal: false,
-          currentPaginationPage: 1,
-          pagesPerSite: 10,
         }));
         localStorage.setItem("access_token", "");
         break;
