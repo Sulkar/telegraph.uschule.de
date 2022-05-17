@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import {
   Button,
   InputGroup,
@@ -21,12 +21,15 @@ export default function AccountPages() {
     myValues.pagesPerSite
   );
 
+  const initialLoad = useRef(true);
+
   const [pageLoadingProgress, setPageLoadingProgress] = useState(0);
 
   let tempAllPageArray = [];
   let tempDeletedPages = 0;
 
   async function getAccountPages(tempPaginationPage) {
+    console.log("load pages");
     setLoading(true);
     const telegraphAccountPages =
       "https://api.telegra.ph/getPageList?access_token=";
@@ -126,7 +129,7 @@ export default function AccountPages() {
       } else {
         tempDate += tempInfo[3];
       }
-      tempDate = new Date().getFullYear() + "-" + tempDate;
+      tempDate = "2000-" + tempDate;
     }
     return tempDate;
   }
@@ -168,16 +171,21 @@ export default function AccountPages() {
   }
 
   useEffect(() => {
-    if (!myValues.showDeletePageModal) {
+    if (!myValues.showDeletePageModal && !initialLoad.current) {
       getAccountPages(1);
     }
   }, [myValues.showDeletePageModal]);
 
   useEffect(() => {
-    if (!myValues.showAddPageModal) {
+    if (!myValues.showAddPageModal && !initialLoad.current) {
       getAccountPages(1);
     }
   }, [myValues.showAddPageModal]);
+
+  useEffect(() => {
+    initialLoad.current = false;
+    getAccountPages(1);
+  }, []);
 
   return (
     <>

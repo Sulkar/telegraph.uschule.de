@@ -16,17 +16,6 @@ export default function AccountInfo() {
   const normalFormControlBorder = "1px solid #ced4da";
   const changedFormControlBorder = "2px solid tomato";
 
-  var compStyle = {
-    video: { maxWidth: "500px", marginBottom: "10px" },
-    inputGroup: { maxWidth: "300px" },
-    navbar: {
-      borderRadius: "20px",
-    },
-    button: {
-      margin: "2px",
-    },
-  };
-
   async function getAccountInfo() {
     setLoading(true);
     const telegraphAccountInfo =

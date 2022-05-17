@@ -29,12 +29,22 @@ export default function PagesTable({ pageArray }) {
           setTimeout(() => {
             //createTelegraphPage(title, content);
             const newPageDate = "[date=" + page.pageDate + "]";
-            if (content[0].tag === "p") {
+            if (
+              content[0].tag === "p" &&
+              typeof content[0].children[0] == "string"
+            ) {
               const optionsFound =
                 content[0].children[0].match(/\[date=([0-9-]+)\]/);
               //date option found -> change date
               if (optionsFound != null) {
                 content[0].children[0] = newPageDate;
+              } else {
+                //date option not found -> create new one and insert as first element of content array
+                const newPTag = {
+                  tag: "p",
+                  children: [newPageDate],
+                };
+                content.unshift(newPTag);
               }
             } else {
               //date option not found -> create new one and insert as first element of content array
