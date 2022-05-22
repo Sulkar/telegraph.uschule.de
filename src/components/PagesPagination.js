@@ -1,28 +1,23 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { MyContext } from "./MyContext";
 import { Pagination } from "react-bootstrap";
 
 export default function PagesPagination() {
   const [myValues, setMyValues] = useContext(MyContext);
   const [paginationItems, setPaginationItems] = useState([]);
+  const initialLoad = useRef(true);
 
   //
   function updatePaginationToolbar(activeItem) {
+    console.log("updatePaginationToolbar()");
     const maxPaginationButtons = 4;
 
     let tempItems = [];
     let maxPaginationPages = 0;
 
-    if (myValues.showDeletedPages) {
-      maxPaginationPages = Math.ceil(
-        myValues.currentPageCount / myValues.pagesPerSite
-      );
-    } else {
-      maxPaginationPages = Math.ceil(
-        (myValues.currentPageCount - myValues.currentDeletedPages) /
-          myValues.pagesPerSite
-      );
-    }
+    maxPaginationPages = Math.ceil(
+      myValues.currentPageCount / myValues.pagesPerSite
+    );
 
     //start page
     let startPage =
@@ -96,12 +91,22 @@ export default function PagesPagination() {
       ...oldValues,
       currentPaginationPage: number,
     }));
-    updatePaginationToolbar(number);
   }
 
   useEffect(() => {
-    updatePaginationToolbar(myValues.currentPaginationPage);
-  }, [myValues.currentPaginationPage, myValues.pagesPerSite, myValues.showDeletedPages]);
+    if (!initialLoad.current) {
+      updatePaginationToolbar(myValues.currentPaginationPage);
+    }
+  }, [
+    myValues.currentPaginationPage,
+    myValues.pagesPerSite,
+    myValues.showDeletedPages,
+    myValues.filteredPages,
+  ]);
+
+  useEffect(() => {
+    initialLoad.current = false;
+  }, []);
 
   return (
     <>

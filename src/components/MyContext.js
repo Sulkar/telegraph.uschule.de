@@ -4,9 +4,14 @@ const MyContext = React.createContext({});
 
 function MyContextProvider(props) {
   const [myValues, setMyValues] = useState({
+    //global state variables
     qrCodeScanner: null,
     loggedIn: false,
     currentPage: "login",
+    allPages: [],
+    filteredPages: [],
+    pageFilter: "",
+    sortFilter: "",
     currentAccessToken: "",
     currentAuthorName: "",
     currentShortName: "",
@@ -23,10 +28,15 @@ function MyContextProvider(props) {
     currentPaginationPage: 1,
     currentSelectedPage: null,
     pagesPerSite: 10,
+    //reset function
     reset: function () {
       this.qrCodeScanner = null;
       this.loggedIn = false;
       this.currentPage = "login";
+      this.allPages = [];
+      this.filteredPages = [];
+      this.pageFilter = "";
+      this.sortFilter = "";
       this.currentAccessToken = "";
       this.currentAuthorName = "";
       this.currentShortName = "";

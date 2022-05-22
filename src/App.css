@@ -57,3 +57,10 @@
 .navbar-light .navbar-nav .show > .nav-link {
   font-weight: bolder !important;
 }
+
+
+@media only screen and (max-width: 600px) {
+  .hideMobile{
+    display: none !important;
+  }
+}

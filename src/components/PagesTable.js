@@ -1,16 +1,16 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { MyContext } from "./MyContext";
 import { Table, Dropdown, Form } from "react-bootstrap";
 import PagesPagination from "./PagesPagination";
 import QRCodeModal from "./QRCodeModal";
 import axios from "axios";
 
-export default function PagesTable({ pageArray }) {
+export default function PagesTable() {
   const [myValues, setMyValues] = useContext(MyContext);
   const [currentPages, setCurrentPages] = useState([]); //part of pages that you see in table
-  const [updatedPages, setUpdatedPages] = useState([]); //all pages that are modified through sorting, ...
   const [sortConfig, setSortConfig] = useState(null);
   const [loading, setLoading] = useState(false);
+  const initialLoad = useRef(true);
 
   async function getPageData(page) {
     setLoading(true);
@@ -109,7 +109,13 @@ export default function PagesTable({ pageArray }) {
     }
     setSortConfig({ field, direction });
 
-    let sortedPages = [...pageArray];
+    let sortedPages = [];
+
+    if (myValues.pageFilter !== "") {
+      sortedPages = [...myValues.filteredPages];
+    } else {
+      sortedPages = [...myValues.allPages];
+    }
 
     if (type === "string") {
       sortedPages.sort((a, b) => {
@@ -139,10 +145,17 @@ export default function PagesTable({ pageArray }) {
       });
     }
 
-    setUpdatedPages(sortedPages);
+    //setUpdatedPages(sortedPages);
+    setMyValues((oldValues) => ({
+      ...oldValues,
+      filteredPages: sortedPages,
+      sortFilter: field,
+    }));
   }
 
+  //get current (pagination) pages to display in table
   function getCurrentPages(pages) {
+    console.log("getCurrentPages()");
     var filteredPages = [];
 
     if (myValues.showDeletedPages) {
@@ -184,19 +197,28 @@ export default function PagesTable({ pageArray }) {
   }
 
   useEffect(() => {
-    if (updatedPages.length > 0) {
-      getCurrentPages(updatedPages);
-    } else {
-      //on page load: first call
-      getCurrentPages(pageArray);
+    if (!initialLoad.current) {
+      //if pages got filtered
+      if (myValues.pageFilter !== "" || myValues.sortFilter !== "") {
+        //Problem mit refresh after delete
+        getCurrentPages(myValues.filteredPages);
+      }
+      //else
+      else {
+        getCurrentPages(myValues.allPages);
+      }
     }
   }, [
     myValues.currentPaginationPage,
-    updatedPages,
     myValues.pagesPerSite,
     myValues.showDeletedPages,
     myValues.showDeletePageModal,
+    myValues.filteredPages,
   ]);
+
+  useEffect(() => {
+    initialLoad.current = false;
+  }, []);
 
   //custom dropdown toggle - three dots
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
