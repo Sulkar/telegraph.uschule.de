@@ -4,7 +4,7 @@ A simple website to manage your [telegra.ph](https://telegra.ph/) posts and acco
 To quickly write and publish posts and manage them using anonymous accounts.
 
 # Demo:
-[telegraph-buddy](https://telegraph-buddy.unsere-schule.org/)
+[telegraph-buddy](https://telegraph.uschule.de/)
 
 # Features:
 - Create a new telegra.ph account.
