@@ -11,7 +11,8 @@ function App() {
     <MyContextProvider>
       <div className="App">
         <header className="App-header">
-          <h2 style={{marginTop: "20px"}}>telegra.ph <span>buddy</span></h2>
+          <img src="./logo2.svg" style={{maxWidth: "400px", marginTop: "20px", marginBottom: "20px"}}/>
+          
           <MyNavbar />
           <Page />
         </header>

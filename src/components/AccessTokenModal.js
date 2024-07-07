@@ -18,7 +18,7 @@ export default function AccessTokenModal({ backdrop, redirectPage }) {
   useEffect(() => {
     //get Account Information from telegra.ph api
     QRCode.toDataURL(
-      "https://telegraph-buddy.unsere-schule.org/?at=" +
+      "https://telegraph.uschule.de/?at=" +
         myValues.currentAccessToken
     )
       .then((qrCode) => {

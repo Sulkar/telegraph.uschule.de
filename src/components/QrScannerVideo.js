@@ -18,7 +18,7 @@ export default function QrScannerVideo() {
       myContainer.current,
       (result) => {
         const access_token = result.data.replace(
-          "https://telegraph-buddy.unsere-schule.org/?at=",
+          "https://telegraph.uschule.de/?at=",
           ""
         );
         setMyValues((oldValues) => ({
